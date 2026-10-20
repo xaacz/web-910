@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lớp 9/10 (2026 - 2027) | Kỷ Yếu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #fbf7ee;
+      --card-bg: #ffffff;
+      --accent: #c2410c;
+      --accent-warm: #d97706;
+      --text: #2c221a;
+      --text-sub: #786552;
+      --shadow: 0 4px 14px rgba(50, 30, 15, 0.08);
+      --tape: rgba(243, 220, 185, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      line-height: 1.5;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background ảnh tập thể tối ưu: GPU layer tĩnh, không tính toán lại khi cuộn */
+    .bg-parallax {
+      position: fixed;
+      inset: -8px;
+      z-index: -2;
+      background: url('media/5e5b6a2d6c08ec56b5192.jpg') center 35% / cover no-repeat;
+      opacity: 0.16;
+      filter: blur(4px);
+      transform: translateZ(0);
+      pointer-events: none;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(251, 247, 238, 0.75);
+      pointer-events: none;
+    }
+
+    /* Thanh Bar cố định nhẹ */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      background: #fdfaf3;
+      border-bottom: 2px dashed #e2d2bc;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+    .brand-tag {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-pill {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: #fed7aa;
+      color: #9a3412;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
+
+    /* Header & Ảnh Bìa */
+    .hero-section {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .term-badge {
+      display: inline-block;
+      background: #fef08a;
+      border: 1px dashed #ca8a04;
+      padding: 3px 14px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #854d0e;
+      margin-bottom: 6px;
+    }
+    h1.hero-title {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(2.8rem, 6vw, 4.2rem);
+      color: var(--accent);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .hero-meta {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    /* Căng ảnh bìa */
+    .cover-card {
+      background: var(--card-bg);
+      padding: 12px 12px 16px;
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 40px;
+      transition: transform 0.15s ease;
+    }
+    .cover-card:hover {
+      transform: translateY(-2px);
+    }
+    .tape {
+      position: absolute;
+      width: 80px;
+      height: 24px;
+      background: var(--tape);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+    .tape-tl { top: -8px; left: 16px; transform: rotate(-5deg); }
+    .tape-tr { top: -8px; right: 16px; transform: rotate(5deg); background: rgba(248, 180, 180, 0.85); }
+    .tape-bl { bottom: -8px; left: 20px; transform: rotate(4deg); background: rgba(186, 224, 255, 0.85); }
+    .tape-br { bottom: -8px; right: 20px; transform: rotate(-4deg); }
+
+    .cover-img-wrapper {
+      width: 100%;
+      height: 440px;
+      overflow: hidden;
+      border-radius: 4px;
+      background: #222;
+    }
+    .cover-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      display: block;
+    }
+    .cover-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding: 0 6px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .cover-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #3b2512;
+    }
+    .cover-hint {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .section-title {
+      font-family: 'Caveat', cursive;
+      font-size: 2.5rem;
+      color: var(--accent);
+      text-align: center;
+      margin: 35px 0 18px;
+    }
+
+    /* Hộp kỷ niệm 20/10 */
+    .tribute-compact {
+      background: #fff;
+      border: 2px dashed #dec29f;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 22px;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+    .tribute-img {
+      border-radius: 6px;
+      overflow: hidden;
+      aspect-ratio: 1/1;
+      cursor: pointer;
+    }
+    .tribute-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .tribute-text h3 {
+      font-family: 'Caveat', cursive;
+      font-size: 2.1rem;
+      color: #9a3412;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .tribute-text p {
+      font-size: 0.95rem;
+      color: #443425;
+      margin-bottom: 8px;
+    }
+    .tribute-quote {
+      font-style: italic;
+      color: #c2410c;
+      font-weight: 700;
+      font-size: 0.92rem;
+      border-left: 3px solid var(--accent-warm);
+      padding-left: 10px;
+    }
+
+    /* Polaroid Grid */
+    .polaroid-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px 20px;
+      margin-bottom: 40px;
+    }
+    .polaroid-card {
+      background: var(--card-bg);
+      padding: 10px 10px 14px;
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.15s ease;
+    }
+    .polaroid-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      z-index: 5;
+    }
+    .polaroid-card::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 18px;
+      background: var(--tape);
+      z-index: 2;
+    }
+    .r-1 { transform: rotate(-1.5deg); }
+    .r-2 { transform: rotate(1.5deg); }
+    .r-3 { transform: rotate(-1deg); }
+
+    .img-box {
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      border-radius: 2px;
+      background: #eee;
+    }
+    .img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 8px;
+      color: #3b2512;
+      line-height: 1.2;
+    }
+
+    /* Video Reels Khung Dọc 9:16 */
+    .video-grid {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .video-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px 12px 16px;
+      box-shadow: var(--shadow);
+      max-width: 320px;
+      width: 100%;
+      position: relative;
+    }
+    .video-tape {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 18px;
+      background: rgba(248, 180, 180, 0.9);
+      z-index: 2;
+    }
+    .video-box {
+      width: 100%;
+      aspect-ratio: 9/16;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+    .video-box video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .video-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 10px;
+      color: #3b2512;
+    }
+
+    /* Lưu Bút */
+    .guestbook-box {
+      background: #fff8e8;
+      border: 2px dashed #dec29f;
+      border-radius: 14px;
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+    }
+    .notes-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .sticky-note {
+      padding: 14px;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      font-family: 'Caveat', cursive;
+      font-size: 1.35rem;
+      line-height: 1.3;
+      color: #2b1f14;
+    }
+    .sticky-note:nth-child(4n+1) { background: #fef08a; transform: rotate(-1deg); }
+    .sticky-note:nth-child(4n+2) { background: #bae6fd; transform: rotate(1deg); }
+    .sticky-note:nth-child(4n+3) { background: #fbcfe8; transform: rotate(-1.5deg); }
+    .sticky-note:nth-child(4n+4) { background: #bbf7d0; transform: rotate(1deg); }
+    .note-author {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-align: right;
+      margin-top: 8px;
+      color: #5c4733;
+    }
+
+    .note-form {
+      display: flex;
+      gap: 8px;
+      max-width: 580px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    .note-form input {
+      padding: 9px 12px;
+      border: 1px solid #dfcbb5;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .input-author { flex: 1 1 160px; }
+    .input-msg { flex: 3 1 240px; }
+    .btn-submit {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 10, 5, 0.92);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+    .lightbox-modal.active {
+      display: flex;
+    }
+    .lightbox-content {
+      max-width: 96vw;
+      max-height: 90vh;
+      background: #fff;
+      padding: 12px 12px 16px;
+      border-radius: 6px;
+      position: relative;
+      text-align: center;
+    }
+    .lightbox-content img {
+      max-width: 100%;
+      max-height: 72vh;
+      display: block;
+      margin: 0 auto;
+      border-radius: 2px;
+    }
+    .lb-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #2b1f14;
+      margin-top: 8px;
+    }
+    .lb-close {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #ef4444;
+      color: #fff;
+      border: 2px solid #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--text-sub);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    /* TỐI ƯU TOÀN DIỆN CHO ĐIỆN THOẠI */
+    @media (max-width: 768px) {
+      .container { padding: 12px 14px 60px; max-width: 100%; }
+      .nav-bar { padding: 10px 16px; }
+      .brand-tag { font-size: 1.35rem; }
+      .brand-pill { font-size: 0.72rem; padding: 2px 8px; }
+      
+      .hero-section { margin-bottom: 20px; }
+      .term-badge { font-size: 0.75rem; padding: 2px 12px; margin-bottom: 4px; }
+      h1.hero-title { font-size: 2.5rem; line-height: 1.05; }
+      .hero-meta { font-size: 0.88rem; }
+      
+      /* Ảnh bìa trên mobile: như một bức ảnh chụp kỷ yếu tràn viền cực đẹp */
+      .cover-card {
+        padding: 8px 8px 12px;
+        margin-bottom: 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(50, 30, 15, 0.1);
+      }
+      .cover-img-wrapper {
+        height: auto;
+        aspect-ratio: 16/10;
+        border-radius: 6px;
+      }
+      .tape { width: 50px; height: 16px; }
+      .tape-tl { top: -6px; left: 8px; }
+      .tape-tr { top: -6px; right: 8px; }
+      .tape-bl { bottom: -6px; left: 8px; }
+      .tape-br { bottom: -6px; right: 8px; }
+      .cover-footer { margin-top: 8px; padding: 0 4px; }
+      .cover-caption { font-size: 1.4rem; }
+      .cover-hint { font-size: 0.75rem; }
+
+      /* Hộp 20/10 trên mobile: Gọn gàng thanh lịch dạng thẻ ngang */
+      .tribute-compact {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        text-align: left;
+      }
+      .tribute-img {
+        width: 85px;
+        height: 85px;
+        flex-shrink: 0;
+        border-radius: 8px;
+      }
+      .tribute-text h3 {
+        font-size: 1.45rem;
+        margin-bottom: 4px;
+      }
+      .tribute-text p {
+        display: none;
+      }
+      .tribute-quote {
+        font-size: 0.85rem;
+        padding-left: 8px;
+        border-left: 3px solid var(--accent-warm);
+        border-top: none;
+      }
+
+      .section-title { font-size: 2.1rem; margin: 28px 0 16px; }
+
+      /* Lưới ảnh Polaroid: 1 cột gọn gàng căn giữa */
+      .polaroid-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        max-width: 330px;
+        margin: 0 auto 35px;
+      }
+      .polaroid-card {
+        padding: 10px 10px 14px;
+      }
+      .card-caption { font-size: 1.5rem; margin-top: 8px; }
+
+      /* Thước phim 9/10: Dạng Reels vuốt ngang mượt mà */
+      .video-grid {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 6px 4px 16px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+        margin-bottom: 35px;
+      }
+      .video-card {
+        flex: 0 0 250px;
+        scroll-snap-align: center;
+        padding: 10px 10px 14px;
+        margin: 0;
+      }
+      .video-caption { font-size: 1.35rem; }
+
+      /* Khung Lưu Bút */
+      .guestbook-box { padding: 18px 14px; border-radius: 12px; }
+      .notes-board {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .sticky-note { font-size: 1.3rem; padding: 12px; }
+      .note-form { flex-direction: column; gap: 8px; }
+      .input-author, .input-msg, .btn-submit { width: 100%; flex: none; }
+      .btn-submit { padding: 11px; font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background ảnh tập thể tối ưu tĩnh -->
+  <div class="bg-parallax"></div>
+  <div class="bg-overlay"></div>
+
+  <!-- Audio Element (Tự động phát bài nhạc, preload nhẹ) -->
+  <audio id="bgAudio" src="media/bgm.mp3" loop preload="auto"></audio>
+
+  <!-- Navigation Bar Tinh Gọn -->
+  <header class="nav-bar">
+    <a href="#" class="brand-tag">
+      <span>📖 Kỷ Yếu 9/10</span>
+      <span class="brand-pill">Niên khóa 2026 - 2027</span>
+    </a>
+  </header>
+
+  <div class="container">
+
+    <!-- Header Tiêu Đề -->
+    <div class="hero-section">
+      <div class="term-badge">Niên Khóa 2026 - 2027</div>
+      <h1 class="hero-title">Tập Thể Lớp 9/10</h1>
+      <p class="hero-meta">GVCN: Cô Mỹ Hạnh • Những ngày tháng thanh xuân đẹp nhất</p>
+    </div>
+
+    <!-- CĂNG ẢNH BÌA TẬP THỂ -->
+    <div class="cover-card" onclick="openLightbox('media/5e5b6a2d6c08ec56b5192.jpg', 'Tập thể 9/10 niên khóa 2026 - 2027')">
+      <div class="tape tape-tl"></div>
+      <div class="tape tape-tr"></div>
+      <div class="tape tape-bl"></div>
+      <div class="tape tape-br"></div>
+
+      <div class="cover-img-wrapper">
+        <img src="media/5e5b6a2d6c08ec56b5192.jpg" alt="Ảnh bìa tập thể lớp 9/10" decoding="async">
+      </div>
+      <div class="cover-footer">
+        <div class="cover-caption">Đại gia đình 9/10 bên nhau</div>
+        <div class="cover-hint">🔍 Bấm để phóng to</div>
+      </div>
+    </div>
+
+    <!-- Hộp Kỷ Niệm 20/10 Gọn Gàng -->
+    <div class="tribute-compact">
+      <div class="tribute-img" onclick="openLightbox('media/934cbcc6bde33dbd64f25.jpg', 'Bánh kem 20/10: Cô Hạnh Dễ Thương Vui Vẻ')">
+        <img src="media/934cbcc6bde33dbd64f25.jpg" alt="Bánh kem 20/10" loading="lazy" decoding="async">
+      </div>
+      <div class="tribute-text">
+        <h3>Khoảnh Khắc 20/10 Ấm Áp 🍰</h3>
+        <p>Chiếc bánh kem nhỏ cùng nụ cười rạng rỡ của cả lớp và cô chủ nhiệm trong ngày kỷ niệm đáng nhớ.</p>
+        <div class="tribute-quote">"Cô Hạnh Dễ Thương 20.10 Vui Vẻ"</div>
+      </div>
+    </div>
+
+    <!-- Kho Ảnh Kỷ Niệm -->
+    <h2 class="section-title">Kho Kỷ Niệm 📷</h2>
+    <div class="polaroid-grid">
+
+      <!-- Ảnh 1: Selfie -->
+      <div class="polaroid-card r-1" onclick="openLightbox('media/a13c8b4a8d6f0d31547e1.jpg', '9/10 bá khí')">
+        <div class="img-box">
+          <img src="media/a13c8b4a8d6f0d31547e1.jpg" alt="9/10 bá khí" loading="lazy" decoding="async">
+        </div>
+        <div class="card-caption">9/10 bá khí</div>
+      </div>
+
+      <!-- Ảnh 2: Ninja Lead -->
+      <div class="polaroid-card r-2" onclick="openLightbox('media/2e4086cd87e807b65ef97.jpg', 'Ninja lead')">
+        <div class="img-box">
+          <img src="media/2e4086cd87e807b65ef97.jpg" alt="Ninja lead" loading="lazy" decoding="async">
+        </div>
+        <div class="card-caption">Ninja lead</div>
+      </div>
+
+      <!-- Ảnh 3: Lớp tụi tui nè -->
+      <div class="polaroid-card r-3" onclick="openLightbox('media/862449ad4888c8d691993.jpg', 'Lớp tụi tui nè')">
+        <div class="img-box">
+          <img src="media/862449ad4888c8d691993.jpg" alt="Lớp tụi tui nè" loading="lazy" decoding="async">
+        </div>
+        <div class="card-caption">Lớp tụi tui nè</div>
+      </div>
+
+
+    </div>
+
+    <!-- Video Kỷ Niệm Dọc 9:16 (preload="none" để không ngốn RAM / CPU) -->
+    <h2 class="section-title">Thước Phim 9/10 🎬</h2>
+    <div class="video-grid">
+
+      <div class="video-card">
+        <div class="video-tape"></div>
+        <div class="video-box">
+          <video controls preload="none" poster="media/thumb_video1.jpg" playsinline>
+            <source src="media/2aOboR6nj2YZ8NfcxcttUSWgVEwalWKn8Lp5xPcG.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-caption">Tiếng cười náo nhiệt 🎉</div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-tape" style="background: rgba(186, 224, 255, 0.9);"></div>
+        <div class="video-box">
+          <video controls preload="none" poster="media/thumb_video2.jpg" playsinline>
+            <source src="media/47123230604375589066.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-caption">Cắt bánh kem cùng Cô 🎂</div>
+      </div>
+
+    </div>
+
+    <!-- Lưu Bút & Hẹn Ước -->
+    <h2 class="section-title">Lưu Bút 9/10 📝</h2>
+    <div class="guestbook-box">
+      <div class="notes-board" id="notesBoard">
+        <div class="sticky-note">
+          "Chúc 9/10 đỗ 100% nguyện vọng 1 cấp 3 nhé anh em!"
+          <div class="note-author">— Lớp Trưởng</div>
+        </div>
+        <div class="sticky-note">
+          "Ninja 9/10 chúc cô Hạnh và cả lớp luôn vui vẻ, may mắn!"
+          <div class="note-author">— Ninja Lead</div>
+        </div>
+        <div class="sticky-note">
+          "Sau này dù đi đâu cũng nhớ về 9/10 thân thương nha!"
+          <div class="note-author">— Bí Thư</div>
+        </div>
+      </div>
+
+      <form class="note-form" onsubmit="addNote(event)">
+        <input type="text" id="noteName" class="input-author" placeholder="Tên bạn..." required maxlength="25">
+        <input type="text" id="noteMsg" class="input-msg" placeholder="Lời nhắn gửi..." required maxlength="120">
+        <button type="submit" class="btn-submit">Dán Note</button>
+      </form>
+    </div>
+
+    <footer>
+      <p>Lớp 9/10 • Niên Khóa 2026 - 2027 • GVCN: Cô Mỹ Hạnh</p>
+    </footer>
+
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button class="lb-close" onclick="closeLightbox()">&times;</button>
+      <img id="lbImg" src="" alt="Zoom preview">
+      <div class="lb-caption" id="lbCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    // Tự động phát nhạc tối ưu: 0 re-render, 0 lag
+    const audio = document.getElementById('bgAudio');
+    const playMusic = () => { if (audio && audio.paused) audio.play().catch(() => {}); };
+    playMusic();
+    ['click', 'touchstart', 'scroll', 'keydown'].forEach(e => window.addEventListener(e, playMusic, { once: true, passive: true }));
+
+    // Lightbox phóng to ảnh
+    function openLightbox(src, caption) {
+      document.getElementById('lbImg').src = src;
+      document.getElementById('lbCaption').innerText = caption;
+      document.getElementById('lightboxModal').classList.add('active');
+    }
+    function closeLightbox() {
+      document.getElementById('lightboxModal').classList.remove('active');
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Lưu bút localStorage
+    function loadNotes() {
+      const saved = JSON.parse(localStorage.getItem('notes_910_v2') || '[]');
+      const board = document.getElementById('notesBoard');
+      saved.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'sticky-note';
+        div.innerHTML = `"${escapeHtml(item.msg)}"<div class="note-author">— ${escapeHtml(item.name)}</div>`;
+        board.appendChild(div);
+      });
+    }
+
+    function addNote(e) {
+      e.preventDefault();
+      const name = document.getElementById('noteName').value.trim();
+      const msg = document.getElementById('noteMsg').value.trim();
+      if (!name || !msg) return;
+
+      const board = document.getElementById('notesBoard');
+      const div = document.createElement('div');
+      div.className = 'sticky-note';
+      div.innerHTML = `"${escapeHtml(msg)}"<div class="note-author">— ${escapeHtml(name)}</div>`;
+      board.appendChild(div);
+
+      const saved = JSON.parse(localStorage.getItem('notes_910_v2') || '[]');
+      saved.push({ name, msg });
+      localStorage.setItem('notes_910_v2', JSON.stringify(saved));
+
+      document.getElementById('noteName').value = '';
+      document.getElementById('noteMsg').value = '';
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    window.addEventListener('DOMContentLoaded', loadNotes);
+  </script>
+</body>
+</html>
