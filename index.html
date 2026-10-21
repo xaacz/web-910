@@ -754,36 +754,68 @@
       if (e.key === 'Escape') closeLightbox();
     });
 
-    // Lưu bút localStorage
-    function loadNotes() {
-      const saved = JSON.parse(localStorage.getItem('notes_910_v2') || '[]');
-      const board = document.getElementById('notesBoard');
-      saved.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'sticky-note';
-        div.innerHTML = `"${escapeHtml(item.msg)}"<div class="note-author">— ${escapeHtml(item.name)}</div>`;
-        board.appendChild(div);
-      });
-    }
+    // Lưu bút Backend (Google Sheets Web App / Cloud API)
+    const NOTE_API_URL = 'https://script.google.com/macros/s/AKfycbxPtgRMv2hcBYVQq9jQOEMfreMTW9sBc9001aLRuj9DKSj5Yey1hcMXOuu7H71xtwDeRg/exec';
 
-    function addNote(e) {
-      e.preventDefault();
-      const name = document.getElementById('noteName').value.trim();
-      const msg = document.getElementById('noteMsg').value.trim();
-      if (!name || !msg) return;
-
+    function renderNote(name, msg) {
       const board = document.getElementById('notesBoard');
       const div = document.createElement('div');
       div.className = 'sticky-note';
       div.innerHTML = `"${escapeHtml(msg)}"<div class="note-author">— ${escapeHtml(name)}</div>`;
       board.appendChild(div);
+    }
 
-      const saved = JSON.parse(localStorage.getItem('notes_910_v2') || '[]');
-      saved.push({ name, msg });
-      localStorage.setItem('notes_910_v2', JSON.stringify(saved));
+    async function loadNotes() {
+      if (!NOTE_API_URL) {
+        const saved = JSON.parse(localStorage.getItem('notes_910_v2') || '[]');
+        saved.forEach(item => renderNote(item.name, item.msg));
+        return;
+      }
+      try {
+        const res = await fetch(NOTE_API_URL, { redirect: 'follow' });
+        const list = await res.json();
+        if (Array.isArray(list)) {
+          list.forEach(item => {
+            if (item.name && item.msg) renderNote(item.name, item.msg);
+          });
+        }
+      } catch (err) {
+        console.error('Lỗi tải ghi chú:', err);
+      }
+    }
 
-      document.getElementById('noteName').value = '';
-      document.getElementById('noteMsg').value = '';
+    async function addNote(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('noteName');
+      const msgInput = document.getElementById('noteMsg');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const name = nameInput.value.trim();
+      const msg = msgInput.value.trim();
+      if (!name || !msg) return;
+
+      renderNote(name, msg);
+      nameInput.value = '';
+      msgInput.value = '';
+
+      if (!NOTE_API_URL) {
+        const saved = JSON.parse(localStorage.getItem('notes_910_v2') || '[]');
+        saved.push({ name, msg });
+        localStorage.setItem('notes_910_v2', JSON.stringify(saved));
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+      try {
+        await fetch(NOTE_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ name, msg })
+        });
+      } catch (err) {
+        console.error('Lỗi gửi ghi chú:', err);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     }
 
     function escapeHtml(str) {
