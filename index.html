@@ -243,6 +243,7 @@
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 24px 20px;
       margin-bottom: 40px;
+      align-items: start;
     }
     .polaroid-card {
       background: var(--card-bg);
@@ -271,6 +272,7 @@
     .r-1 { transform: rotate(-1.5deg); }
     .r-2 { transform: rotate(1.5deg); }
     .r-3 { transform: rotate(-1deg); }
+    .r-4 { transform: rotate(1.2deg); }
 
     .img-box {
       width: 100%;
@@ -663,6 +665,14 @@
           <img src="media/862449ad4888c8d691993.jpg" alt="Lớp tụi tui nè" loading="lazy" decoding="async">
         </div>
         <div class="card-caption">Lớp tụi tui nè</div>
+      </div>
+
+      <!-- Ảnh 4: Photo strip Kỷ niệm 9/10 -->
+      <div class="polaroid-card r-4" onclick="openLightbox('media/lop910_kyniem.webp', 'Kỷ niệm lớp 9/10')">
+        <div class="img-box" style="aspect-ratio: 581/1024;">
+          <img src="media/lop910_kyniem.webp" alt="Kỷ niệm lớp 9/10" loading="lazy" decoding="async">
+        </div>
+        <div class="card-caption">Kỷ niệm 9/10 ❤️</div>
       </div>
 
 
